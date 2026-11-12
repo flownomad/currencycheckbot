@@ -3,26 +3,22 @@ import matplotlib.pyplot as plt
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
 from telegram import ReplyKeyboardMarkup
 
-# 🔹 Бот-токен
-TOKEN = "7671001166:AAHzuuN84oCWSYGI__rYM7xYtLEVKwd8nl0"
+
+TOKEN = "..."
 API_URL = "https://api.currencyapi.com/v3/latest?apikey=cur_live_GlWlgDluTrndD1siQbll5PPNKJ0QQqWkGDYIpHwW"
 
-# 🔹 Таблица соответствия валют и флагов
 CURRENCY_FLAGS = {
     "USD": "🇺🇸", "EUR": "🇪🇺", "RUB": "🇷🇺", "GBP": "🇬🇧", "JPY": "🇯🇵",
     "BYN": "🇧🇾", "KRW": "🇰🇷", "UAH": "🇺🇦", "CNY": "🇨🇳"
 }
 
-# 🔹 Создание меню валют
 def get_currency_menu():
     keyboard = [[f"{key} {flag}" for key, flag in CURRENCY_FLAGS.items()]]
     return ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
-# 🔹 Обработчик команды /start
 async def start(update, context):
     await update.message.reply_text("Выберите валюту для конвертации:", reply_markup=get_currency_menu())
 
-# 🔹 Функция конвертации суммы в другие валюты
 async def convert_amount(update, context):
     user_input = update.message.text.split()
     
@@ -30,8 +26,8 @@ async def convert_amount(update, context):
         await update.message.reply_text("❌ Ошибка! Введите число и валюту (например, `100 RUB`)")
         return
 
-    amount = float(user_input[0])  # Число, которое ввёл пользователь
-    base_currency = user_input[1].upper()  # Введённая пользователем валюта
+    amount = float(user_input[0]) 
+    base_currency = user_input[1].upper()  
     print(f"Пользователь ввёл: {amount} {base_currency}")  
 
     response = requests.get(API_URL)
@@ -58,10 +54,8 @@ async def convert_amount(update, context):
     else:
         await update.message.reply_text(f"❌ Ошибка загрузки курса! Код: `{response.status_code}`")
 
-# 🔹 Добавляем обработчики команд и сообщений
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, convert_amount))
 
-# 🔹 Запуск бота
 app.run_polling()
